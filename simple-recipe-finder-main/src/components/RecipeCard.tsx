@@ -31,7 +31,7 @@ const RecipeCard = ({
           <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className="w-full h-64 sm:h-72 lg:h-80 object-cover rounded-t-lg"
           />
         </div>
       </Link>

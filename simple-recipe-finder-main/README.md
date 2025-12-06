@@ -183,3 +183,39 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+
+
+
+
+
+Mein Teil
+## Setup
+
+Frontend:
+- cd simple-recipe-finder-main
+- npm install
+- npm run dev
+
+Backend:
+- cd simple-recipe-finder-main/Backend
+- npm install
+- npm start
+
+Starten?
+Node.js und npm installiert
+Git installiert
+
+1. Repo klonen
+git clone DEIN_REPO_LINK.git
+cd simple-recipe-finder-main
+
+2. Frontend installieren und starten
+# im Projekt-Hauptordner \simple-recipe-finder-main\simple-recipe-finder-main> 
+npm install
+npm run dev
+
+3. Backend installieren (neues Terminal)
+cd simple-recipe-finder-main/Backend
+npm install
+npm start

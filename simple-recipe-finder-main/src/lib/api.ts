@@ -43,12 +43,12 @@ async function apiRequest<T>(
     const data = await response.json();
 
     if (!response.ok) {
-      return { error: data.message || 'Ein Fehler ist aufgetreten' };
+      return { error: data.message || 'An error has occurred!' };
     }
 
     return { data };
   } catch (error) {
-    return { error: 'Netzwerkfehler. Bitte versuche es erneut.' };
+    return { error: 'Network error. Please try again.' };
   }
 }
 
@@ -80,28 +80,43 @@ export const authApi = {
 
 // Recipe endpoints
 export const recipeApi = {
-  search: (query: string, filters?: { category?: string; time?: string }) =>
-    apiRequest(`/recipes/search?q=${query}&${new URLSearchParams(filters as any).toString()}`),
+  search: (query: string, filters?: { category?: string; area?: string }) =>
+    apiRequest(
+      `/recipes/search?q=${query}&${new URLSearchParams(filters as any).toString()}`
+    ),
 
-  getById: (id: string) =>
-    apiRequest(`/recipes/${id}`),
+  getById: (id: string) => apiRequest(`/recipes/${id}`),
 
   searchByIngredients: (ingredients: string[], exclude?: string[]) =>
     apiRequest('/recipes/by-ingredients', {
       method: 'POST',
       body: JSON.stringify({ ingredients, exclude }),
     }),
+
+  getRandom: () => apiRequest('/recipes/random'),
 };
+
 
 // Favorites endpoints
 export const favoritesApi = {
-  getAll: () =>
-    apiRequest('/favorites'),
+  getAll: () => apiRequest('/favorites'),
 
-  add: (recipeId: string) =>
+  add: (recipe: {
+    id: string;
+    title: string;
+    image?: string;
+    category?: string;
+    area?: string;
+  }) =>
     apiRequest('/favorites', {
       method: 'POST',
-      body: JSON.stringify({ recipeId }),
+      body: JSON.stringify({
+        id: recipe.id,
+        title: recipe.title,
+        image: recipe.image,
+        category: recipe.category,
+        area: recipe.area,
+      }),
     }),
 
   remove: (recipeId: string) =>
@@ -109,3 +124,4 @@ export const favoritesApi = {
       method: 'DELETE',
     }),
 };
+

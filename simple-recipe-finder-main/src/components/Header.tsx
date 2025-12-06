@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChefHat, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,17 +6,32 @@ import { getAuthToken, authApi } from '@/lib/api';
 
 const Header = () => {
   const location = useLocation();
-  const isAuthenticated = !!getAuthToken();
+  const [isAuthenticated, setIsAuthenticated] = useState(!!getAuthToken());
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!getAuthToken());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const handleLogout = () => {
     authApi.logout();
+    setIsAuthenticated(false);
     window.location.href = '/';
   };
 
   const navLinks = [
-    { to: '/', label: 'Start' },
-    { to: '/recipes', label: 'Rezepte' },
-    { to: '/ingredients', label: 'Zutaten-Suche' },
+    { to: '/', label: 'Home' },
+    { to: '/recipes', label: 'Recipe Search' },
+    { to: '/ingredients', label: 'Ingredient Finder' },
+    { to: '/random', label: 'Random Recipe' },
     ...(isAuthenticated ? [{ to: '/favorites', label: 'Favoriten' }] : []),
   ];
 
@@ -25,7 +41,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-xl font-medium">
             <ChefHat className="text-primary" size={28} />
-            <span>KochHilfe</span>
+            <span>Find your Recipe</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
@@ -34,7 +50,9 @@ const Header = () => {
                 key={link.to}
                 to={link.to}
                 className={`text-sm transition-colors hover:text-primary ${
-                  location.pathname === link.to ? 'text-primary font-medium' : 'text-muted-foreground'
+                  location.pathname === link.to
+                    ? 'text-primary font-medium'
+                    : 'text-muted-foreground'
                 }`}
               >
                 {link.label}
@@ -46,11 +64,11 @@ const Header = () => {
             {isAuthenticated ? (
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut size={16} className="mr-2" />
-                Abmelden
+                Log out
               </Button>
             ) : (
               <Button variant="default" size="sm" asChild>
-                <Link to="/auth">Anmelden</Link>
+                <Link to="/auth">Log in / Register</Link>
               </Button>
             )}
           </div>
@@ -63,7 +81,9 @@ const Header = () => {
               key={link.to}
               to={link.to}
               className={`text-sm whitespace-nowrap transition-colors hover:text-primary ${
-                location.pathname === link.to ? 'text-primary font-medium' : 'text-muted-foreground'
+                location.pathname === link.to
+                  ? 'text-primary font-medium'
+                  : 'text-muted-foreground'
               }`}
             >
               {link.label}

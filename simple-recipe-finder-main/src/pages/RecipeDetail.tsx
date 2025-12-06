@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Clock, Heart, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import { recipeApi, favoritesApi } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -12,24 +13,32 @@ const RecipeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecipe = async () => {
       if (!id) return;
-      
+
       const result = await recipeApi.getById(id);
-      
+
       if (result.error) {
         toast({
-          title: 'Fehler',
+          title: 'Error',
           description: result.error,
           variant: 'destructive',
         });
       } else {
-        setRecipe(result.data);
-        setIsFavorite((result.data as any)?.isFavorite || false);
+        const recipeData = result.data as any;
+
+        // Favoriten laden
+        const favResult = await favoritesApi.getAll();
+        const favoriteIds =
+          (favResult.data as any[] | undefined)?.map((f) => f.id) ?? [];
+
+        setRecipe(recipeData);
+        setIsFavorite(favoriteIds.includes(recipeData.id));
       }
-      
+
       setLoading(false);
     };
 
@@ -37,15 +46,29 @@ const RecipeDetail = () => {
   }, [id, toast]);
 
   const handleToggleFavorite = async () => {
-    if (!id) return;
-    
+    if (!recipe) return;
+
     if (isFavorite) {
-      await favoritesApi.remove(id);
+      await favoritesApi.remove(recipe.id);
+      setIsFavorite(false);
+      toast({
+        title: 'Entfernt',
+        description: 'Rezept aus Favoriten entfernt',
+      });
     } else {
-      await favoritesApi.add(id);
+      await favoritesApi.add({
+        id: recipe.id,
+        title: recipe.title,
+        image: recipe.image,
+        category: recipe.category,
+        area: recipe.area,
+      });
+      setIsFavorite(true);
+      toast({
+        title: 'Gespeichert',
+        description: 'Rezept zu deinen Favoriten hinefügt',
+      });
     }
-    
-    setIsFavorite(!isFavorite);
   };
 
   if (loading) {
@@ -64,7 +87,9 @@ const RecipeDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto px-4 py-8">
-          <p className="text-center text-muted-foreground">Rezept nicht gefunden</p>
+          <p className="text-center text-muted-foreground">
+            Rezept nicht gefunden
+          </p>
         </main>
       </div>
     );
@@ -73,13 +98,15 @@ const RecipeDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
-        <Button variant="ghost" asChild className="mb-6">
-          <Link to="/recipes">
-            <ArrowLeft size={16} className="mr-2" />
-            Zurück
-          </Link>
+        <Button
+          variant="ghost"
+          className="mb-6"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={16} className="mr-2" />
+          Zurück
         </Button>
 
         <div className="max-w-4xl mx-auto">
@@ -96,7 +123,9 @@ const RecipeDetail = () => {
             <Button variant="ghost" size="lg" onClick={handleToggleFavorite}>
               <Heart
                 size={24}
-                className={isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'}
+                className={
+                  isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'
+                }
               />
             </Button>
           </div>
@@ -123,12 +152,16 @@ const RecipeDetail = () => {
             <div className="md:col-span-2">
               <h2 className="text-xl font-medium mb-4">Zubereitung</h2>
               <ol className="space-y-4">
-                {recipe.instructions?.map((instruction: string, index: number) => (
-                  <li key={index} className="flex gap-3">
-                    <span className="font-medium text-primary">{index + 1}.</span>
-                    <span className="text-sm">{instruction}</span>
-                  </li>
-                ))}
+                {recipe.instructions?.map(
+                  (instruction: string, index: number) => (
+                    <li key={index} className="flex gap-3">
+                      <span className="font-medium text-primary">
+                        {index + 1}.
+                      </span>
+                      <span className="text-sm">{instruction}</span>
+                    </li>
+                  )
+                )}
               </ol>
             </div>
           </div>
@@ -139,7 +172,9 @@ const RecipeDetail = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(recipe.nutrition).map(([key, value]) => (
                   <div key={key}>
-                    <p className="text-sm text-muted-foreground capitalize">{key}</p>
+                    <p className="text-sm text-muted-foreground capitalize">
+                      {key}
+                    </p>
                     <p className="text-lg font-medium">{value as string}</p>
                   </div>
                 ))}

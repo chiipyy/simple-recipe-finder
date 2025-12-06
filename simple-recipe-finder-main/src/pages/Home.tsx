@@ -7,29 +7,37 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-16 md:py-24">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <h1 className="text-4xl md:text-6xl font-light tracking-tight">
-            Entdecke <span className="text-primary font-medium">dein nächstes</span> Lieblingsrezept
+            Discover <span className="text-primary font-medium">your next</span>{' '}
+            favorite recipe
           </h1>
-          
+
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Finde Rezepte, die zu deinen vorhandenen Zutaten passen, oder entdecke neue kulinarische Ideen.
+            Find recipes that match the ingredients you have at home, or discover
+            new culinary ideas.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <Button size="lg" asChild>
               <Link to="/ingredients">
                 <ChefHat className="mr-2" size={20} />
-                Was habe ich zu Hause?
+                Tell me your ingredients
               </Link>
             </Button>
-            
+
             <Button size="lg" variant="outline" asChild>
               <Link to="/recipes">
                 <Search className="mr-2" size={20} />
-                Rezepte durchsuchen
+                Look for Recipes
+              </Link>
+            </Button>
+
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/random">
+                Random Recipe
               </Link>
             </Button>
           </div>
@@ -40,9 +48,10 @@ const Home = () => {
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
               <Search className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium">Rezepte suchen</h3>
+            <h3 className="font-medium">Search for recipes</h3>
             <p className="text-sm text-muted-foreground">
-              Durchsuche tausende Rezepte mit Filtern nach Kategorie und Zeit
+              Search thousands of recipes using filters for country cuisines or
+              categories.
             </p>
           </div>
 
@@ -50,9 +59,10 @@ const Home = () => {
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
               <ChefHat className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium">Zutaten eingeben</h3>
+            <h3 className="font-medium">Enter ingredients</h3>
             <p className="text-sm text-muted-foreground">
-              Finde Rezepte basierend auf dem, was du bereits zu Hause hast
+              Find recipes based on what you already have at home and exclude
+              things you don&apos;t feel like eating.
             </p>
           </div>
 
@@ -60,9 +70,9 @@ const Home = () => {
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
               <Heart className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium">Favoriten speichern</h3>
+            <h3 className="font-medium">Save favorites</h3>
             <p className="text-sm text-muted-foreground">
-              Merke dir deine Lieblingsrezepte für später
+              Save your favorite recipes for later.
             </p>
           </div>
         </div>

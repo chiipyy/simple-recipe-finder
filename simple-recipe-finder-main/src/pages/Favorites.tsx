@@ -19,7 +19,7 @@ const Favorites = () => {
       
       if (result.error) {
         toast({
-          title: 'Fehler',
+          title: 'Error',
           description: result.error,
           variant: 'destructive',
         });
